@@ -22,7 +22,11 @@ public class Database implements JacksonSerializable<Database> {
         return List.copyOf(whitelistedItems);
     }
 
+    @JsonProperty("secret")
     private boolean secret = false;
+
+    @JsonProperty("ignoreId")
+    private boolean ignoreIdentified = true;
 
     public boolean addWhitelist(String in) {
         if(whitelistedItems.contains(in.toLowerCase(Locale.ROOT))) return false;
@@ -45,6 +49,15 @@ public class Database implements JacksonSerializable<Database> {
     public boolean toggleSecret() {
         this.secret = !this.secret;
         return this.secret;
+    }
+
+    public boolean ignoreIdentified() {
+        return ignoreIdentified;
+    }
+
+    public boolean toggleIgnoreId() {
+        this.ignoreIdentified = !this.ignoreIdentified;
+        return this.ignoreIdentified;
     }
 
     public boolean removeWhitelist(String in) {

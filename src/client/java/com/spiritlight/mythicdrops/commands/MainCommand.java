@@ -35,6 +35,7 @@ public class MainCommand extends AbstractCommand<FabricClientCommandSource> {
                             %s
                             %s
                             %s
+                            %s
                             
                             %s""",
                             PREFIX_NO_BRACKET + CONCAT + "Command Help",
@@ -43,6 +44,7 @@ public class MainCommand extends AbstractCommand<FabricClientCommandSource> {
                             COMMAND_BASE + "unstar <name>" + CONCAT + "Un-stars an item",
                             COMMAND_BASE + "stars" + CONCAT + "Shows all starred names",
                             COMMAND_BASE + "hide" + CONCAT + "Hides the dropped item name",
+                            COMMAND_BASE + "ignoreIdentified" + CONCAT + "Toggle ignore identified items",
 
                             SUPPORT
                             )));
@@ -59,6 +61,13 @@ public class MainCommand extends AbstractCommand<FabricClientCommandSource> {
                     boolean v = Client.getDatabase().toggleSecret();
                     ctx.getSource().sendFeedback(Text.of(
                             PREFIX_NO_BRACKET + CONCAT + "Hide item name has been turned " + WHITE + (v ? "on" : "off") + GRAY + "."
+                    ));
+                    return 1;
+                }))
+                .then(literal("ignoreIdentified").executes(ctx -> {
+                    boolean v = Client.getDatabase().toggleIgnoreId();
+                    ctx.getSource().sendFeedback(Text.of(
+                            PREFIX_NO_BRACKET + CONCAT + "Ignore identified item has been turned " + WHITE + (v ? "on" : "off") + GRAY + "."
                     ));
                     return 1;
                 }))

@@ -11,6 +11,7 @@ import com.spiritlight.mythicdrops.Client;
 import com.spiritlight.mythicdrops.utils.ItemRarity;
 import com.spiritlight.mythicdrops.utils.MainThread;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Formatting;
@@ -40,14 +41,19 @@ public class EntityHandler extends EventBusAdapter {
 
         boolean handleEffects;
 
+        boolean preIdentified = preIdentified(item.getStack());
+
+        if(preIdentified && Client.getDatabase().ignoreIdentified()) return;
+
         if(Client.getItem(name).getRarity() == ItemRarity.MYTHIC) {
             handleEffects = true;
             FabricClient.getInstance().getPlayer().sendMessage(
                     FabricChatComponent.of(
                             Formatting.DARK_PURPLE + "[" + Formatting.LIGHT_PURPLE + "!" + Formatting.DARK_PURPLE + "] " +
+                                    (preIdentified ? Formatting.WHITE + "Identified " : "") +
                                     Formatting.LIGHT_PURPLE + "Mythic Item " + Formatting.DARK_PURPLE + displayName + Formatting.LIGHT_PURPLE +
-                                    " has dropped at " + Formatting.GREEN + String.format("%f, %f, %f!",
-                                    entity.getX(), entity.getY(), entity.getZ())
+                                    " has dropped at " + Formatting.GREEN + String.format("%d, %d, %d!",
+                                    (int) entity.getX(), (int) entity.getY(), (int) entity.getZ())
                     )
             );
         } else if (Client.getDatabase().inWhitelist(name)) {
@@ -55,9 +61,10 @@ public class EntityHandler extends EventBusAdapter {
             FabricClient.getInstance().getPlayer().sendMessage(
                     FabricChatComponent.of(
                             Formatting.AQUA + "[" + Formatting.YELLOW + "!" + Formatting.AQUA + "] " +
+                                    (preIdentified ? Formatting.WHITE + "Identified " : "") +
                                     Formatting.AQUA + "Starred Item " + Formatting.YELLOW + displayName + Formatting.AQUA +
-                                    " has dropped at " + Formatting.GREEN + String.format("%f, %f, %f!",
-                                    entity.getX(), entity.getY(), entity.getZ())
+                                    " has dropped at " + Formatting.GREEN + String.format("%d, %d, %d!",
+                                    (int) entity.getX(), (int) entity.getY(), (int) entity.getZ())
                     )
             );
         } else {
@@ -65,7 +72,7 @@ public class EntityHandler extends EventBusAdapter {
         }
 
         if(handleEffects) {
-            item.setGlowing(true);
+            entity.getRepresentativeEntity().setGlowing(true);
             World world = FabricClient.getInstance().getRepresentativeEntity().world;
             FabricPlayer player = FabricClient.getInstance().getPlayer();
 
@@ -77,12 +84,20 @@ public class EntityHandler extends EventBusAdapter {
         }
     }
 
+    private static boolean preIdentified(ItemStack stack) {
+        try {
+            return stack.getOrCreateNbt().getCompound("display").toString().contains("identifications");
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     /**
      *
      * @param entity
      * @return true if the entity matches scanning preconditions
      */
-    private boolean checkPreconditions(FabricEntity entity) {
+    private static boolean checkPreconditions(FabricEntity entity) {
         return entity.getRepresentativeEntity() instanceof ItemEntity;
     }
 
