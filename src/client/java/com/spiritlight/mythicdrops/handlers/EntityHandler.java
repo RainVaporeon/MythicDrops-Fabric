@@ -33,6 +33,7 @@ public class EntityHandler extends EventBusAdapter {
         String name = item.getStack().getName().getString();
         String displayName = Client.getDatabase().isSecret() ? "[???]" : name;
         if(Client.getItem(name).getRarity() == ItemRarity.MYTHIC) {
+            item.setGlowing(true);
             FabricClient.getInstance().getPlayer().sendMessage(
                     FabricChatComponent.of(
                             Formatting.DARK_PURPLE + "[" + Formatting.LIGHT_PURPLE + "!" + Formatting.DARK_PURPLE + "] " +
@@ -42,6 +43,7 @@ public class EntityHandler extends EventBusAdapter {
                     )
             );
         } else if (Client.getDatabase().inWhitelist(name)) {
+            item.setGlowing(true);
             FabricClient.getInstance().getPlayer().sendMessage(
                     FabricChatComponent.of(
                             Formatting.AQUA + "[" + Formatting.YELLOW + "!" + Formatting.AQUA + "] " +
