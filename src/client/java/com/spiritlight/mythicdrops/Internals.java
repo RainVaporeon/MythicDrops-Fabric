@@ -21,6 +21,9 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public class Internals {
+    /**
+     * Initializes the bus adapter
+     */
     static void initialize() {
         ClientEntityEvents.ENTITY_LOAD.register(((entity, world) -> {
             EventBus.instance.fire(new EntityTrackingEvent(FabricEntity.of(entity)));
@@ -32,9 +35,7 @@ public class Internals {
     }
 
     /**
-     * Utility to fetch all items, including ingredients.
-     *
-     * @return
+     * Utility to fetch all items
      */
     static Map<String, ItemDetails> loadItems() {
         Map<String, ItemDetails> dataset = new HashMap<>();
