@@ -44,12 +44,11 @@ public class Internals {
         JsonArray items = gson.fromJson(HttpRequests.get(Query.ITEM_API), JsonObject.class)
                 .getAsJsonArray("items");
 
-        toStream(items).map(ItemDetails::fromJson).forEach(details -> dataset.put(details.getName(), details));
+        items.forEach(element -> {
+            ItemDetails details = ItemDetails.fromJson(element);
+            dataset.put(details.getName(), details);
+        });
 
         return dataset;
-    }
-
-    private static Stream<JsonElement> toStream(JsonArray array) {
-        return StreamSupport.stream(array.spliterator(), false);
     }
 }

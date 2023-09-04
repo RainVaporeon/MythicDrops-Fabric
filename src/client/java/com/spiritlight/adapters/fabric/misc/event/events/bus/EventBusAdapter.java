@@ -42,10 +42,6 @@ public class EventBusAdapter implements IEventBusSubscriber {
             String methodName = "on" + key.substring(0, key.lastIndexOf(EVENT_KEY));
 
             Method method = this.getClass().getMethod(methodName, event.getClass());
-            // Ignored until there are better options to this
-//            if(method.getAnnotation(AdapterMethod.class) == null) {
-//                throw new IllegalArgumentException("method " + method + " is not an adapter method");
-//            }
             method.setAccessible(true);
             method.invoke(this, event);
 
