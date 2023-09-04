@@ -2,11 +2,15 @@ package com.spiritlight.mythicdrops.commands;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.suggestion.Suggestions;
 import com.spiritlight.mythicdrops.Client;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.minecraft.server.command.TeleportCommand;
 import net.minecraft.text.Text;
 
 import java.util.List;
+import java.util.Locale;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
@@ -79,19 +83,27 @@ public class MainCommand extends AbstractCommand<FabricClientCommandSource> {
 
                     if(successful) {
                         ctx.getSource().sendFeedback(Text.of(
-                                PREFIX_NO_BRACKET + CONCAT + "Successfully added " + RESET + val + GRAY + " into the starred list."
+                                PREFIX_NO_BRACKET + CONCAT + "Successfully added " + RESET + val + GRAY + " into the starred list. "
                         ));
                         return 1;
                     } else {
                         ctx.getSource().sendFeedback(Text.of(
-                                PREFIX_NO_BRACKET + CONCAT + "Failed to add " + RESET + val + GRAY + " into the starred list." +
+                                PREFIX_NO_BRACKET + CONCAT + "Failed to add " + RESET + val + GRAY + " into the starred list. " +
                                         "This entry might be present in the list already."
                         ));
                         return 0;
                     }
                 })))
                 .then(literal("unstar")
-                        .then(argument("value", StringArgumentType.greedyString()).executes(ctx -> {
+                        .then(argument("value", StringArgumentType.greedyString())
+                                .suggests((ctx, builder) -> {
+                                    String current = getValueElse(ctx, "value", "");
+                                    for(String value : Client.getDatabase().getWhitelistedItems().stream().filter(t -> t.toLowerCase(Locale.ROOT).startsWith(current.toLowerCase(Locale.ROOT))).toList()) {
+                                        builder.suggest(value);
+                                    }
+                                    return builder.buildFuture();
+                                })
+                                .executes(ctx -> {
                     // Calling String.valueOf for null safety
                     String val = String.valueOf(ctx.getArgument("value", String.class));
                     boolean successful = Client.getDatabase().removeWhitelist(val);
@@ -122,6 +134,13 @@ public class MainCommand extends AbstractCommand<FabricClientCommandSource> {
                     ));
                     return 1;
                 }));
+    }
 
+    private static String getValueElse(CommandContext<?> ctx, String key, String or) {
+        try {
+            return ctx.getArgument(key, String.class);
+        } catch (Exception ex) {
+            return or;
+        }
     }
 }
