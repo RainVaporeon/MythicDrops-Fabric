@@ -23,6 +23,7 @@ public class EntityHandler extends EventBusAdapter {
 
     @Override
     public void onEntityTracking(EntityTrackingEvent event) {
+        if(!Client.getDatabase().isActive()) return;
         SHARED_EXECUTOR.schedule(() -> MainThread.run(() -> this.scanEntity(event.getEntity()))
                 , 50, TimeUnit.MILLISECONDS);
     }
