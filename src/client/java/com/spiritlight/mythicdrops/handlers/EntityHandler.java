@@ -1,6 +1,7 @@
 package com.spiritlight.mythicdrops.handlers;
 
 import com.spiritlight.adapters.fabric.entity.FabricEntity;
+import com.spiritlight.adapters.fabric.entity.FabricPlayer;
 import com.spiritlight.adapters.fabric.game.FabricChatComponent;
 import com.spiritlight.adapters.fabric.game.FabricClient;
 import com.spiritlight.adapters.fabric.misc.event.events.bus.EventBus;
@@ -10,7 +11,10 @@ import com.spiritlight.mythicdrops.Client;
 import com.spiritlight.mythicdrops.utils.ItemRarity;
 import com.spiritlight.mythicdrops.utils.MainThread;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Formatting;
+import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 
 import java.util.concurrent.Executors;
@@ -33,8 +37,11 @@ public class EntityHandler extends EventBusAdapter {
         ItemEntity item = (ItemEntity) entity.getRepresentativeEntity();
         String name = item.getStack().getName().getString();
         String displayName = Client.getDatabase().isSecret() ? "[???]" : name;
+
+        boolean handleEffects;
+
         if(Client.getItem(name).getRarity() == ItemRarity.MYTHIC) {
-            item.setGlowing(true);
+            handleEffects = true;
             FabricClient.getInstance().getPlayer().sendMessage(
                     FabricChatComponent.of(
                             Formatting.DARK_PURPLE + "[" + Formatting.LIGHT_PURPLE + "!" + Formatting.DARK_PURPLE + "] " +
@@ -44,7 +51,7 @@ public class EntityHandler extends EventBusAdapter {
                     )
             );
         } else if (Client.getDatabase().inWhitelist(name)) {
-            item.setGlowing(true);
+            handleEffects = true;
             FabricClient.getInstance().getPlayer().sendMessage(
                     FabricChatComponent.of(
                             Formatting.AQUA + "[" + Formatting.YELLOW + "!" + Formatting.AQUA + "] " +
@@ -53,6 +60,20 @@ public class EntityHandler extends EventBusAdapter {
                                     entity.getX(), entity.getY(), entity.getZ())
                     )
             );
+        } else {
+            handleEffects = false;
+        }
+
+        if(handleEffects) {
+            item.setGlowing(true);
+            World world = FabricClient.getInstance().getRepresentativeEntity().world;
+            FabricPlayer player = FabricClient.getInstance().getPlayer();
+
+            if(world == null || player == null) return;
+
+            world.playSound(player.getX(), player.getY(), player.getZ(),
+                    SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER,
+                    1.0f, 1.0f, false);
         }
     }
 
