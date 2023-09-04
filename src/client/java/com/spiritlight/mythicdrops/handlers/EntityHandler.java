@@ -31,11 +31,12 @@ public class EntityHandler extends EventBusAdapter {
         if(!checkPreconditions(entity)) return;
         ItemEntity item = (ItemEntity) entity.getRepresentativeEntity();
         String name = item.getStack().getName().getString();
+        String displayName = Client.getDatabase().isSecret() ? "[???]" : name;
         if(Client.getItem(name).getRarity() == ItemRarity.MYTHIC) {
             FabricClient.getInstance().getPlayer().sendMessage(
                     FabricChatComponent.of(
                             Formatting.DARK_PURPLE + "[" + Formatting.LIGHT_PURPLE + "!" + Formatting.DARK_PURPLE + "] " +
-                                    Formatting.LIGHT_PURPLE + "Mythic Item " + Formatting.DARK_PURPLE + name + Formatting.LIGHT_PURPLE +
+                                    Formatting.LIGHT_PURPLE + "Mythic Item " + Formatting.DARK_PURPLE + displayName + Formatting.LIGHT_PURPLE +
                                     " has dropped at " + Formatting.GREEN + String.format("%f, %f, %f!",
                                     entity.getX(), entity.getY(), entity.getZ())
                     )
@@ -44,7 +45,7 @@ public class EntityHandler extends EventBusAdapter {
             FabricClient.getInstance().getPlayer().sendMessage(
                     FabricChatComponent.of(
                             Formatting.AQUA + "[" + Formatting.YELLOW + "!" + Formatting.AQUA + "] " +
-                                    Formatting.AQUA + "Starred Item " + Formatting.YELLOW + name + Formatting.AQUA +
+                                    Formatting.AQUA + "Starred Item " + Formatting.YELLOW + displayName + Formatting.AQUA +
                                     " has dropped at " + Formatting.GREEN + String.format("%f, %f, %f!",
                                     entity.getX(), entity.getY(), entity.getZ())
                     )

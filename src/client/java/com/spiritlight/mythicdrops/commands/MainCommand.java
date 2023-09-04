@@ -34,6 +34,7 @@ public class MainCommand extends AbstractCommand<FabricClientCommandSource> {
                             %s
                             %s
                             %s
+                            %s
                             
                             %s""",
                             PREFIX_NO_BRACKET + CONCAT + "Command Help",
@@ -41,6 +42,7 @@ public class MainCommand extends AbstractCommand<FabricClientCommandSource> {
                             COMMAND_BASE + "star <name>" + CONCAT + "Stars an item",
                             COMMAND_BASE + "unstar <name>" + CONCAT + "Un-stars an item",
                             COMMAND_BASE + "stars" + CONCAT + "Shows all starred names",
+                            COMMAND_BASE + "hide" + CONCAT + "Hides the dropped item name",
 
                             SUPPORT
                             )));
@@ -49,7 +51,14 @@ public class MainCommand extends AbstractCommand<FabricClientCommandSource> {
                 .then(literal("toggle").executes(ctx -> {
                     boolean v = Client.getDatabase().toggleActive();
                     ctx.getSource().sendFeedback(Text.of(
-                            PREFIX_NO_BRACKET + CONCAT + "The mod has been turned " + (v ? "on" : "off") + "."
+                            PREFIX_NO_BRACKET + CONCAT + "The mod has been turned " + WHITE + (v ? "on" : "off") + GRAY + "."
+                    ));
+                    return 1;
+                }))
+                .then(literal("hide").executes(ctx -> {
+                    boolean v = Client.getDatabase().toggleSecret();
+                    ctx.getSource().sendFeedback(Text.of(
+                            PREFIX_NO_BRACKET + CONCAT + "Hide item name has been turned " + WHITE + (v ? "on" : "off") + GRAY + "."
                     ));
                     return 1;
                 }))

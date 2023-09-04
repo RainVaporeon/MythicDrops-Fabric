@@ -22,6 +22,8 @@ public class Database implements JacksonSerializable<Database> {
         return List.copyOf(whitelistedItems);
     }
 
+    private boolean secret = false;
+
     public boolean addWhitelist(String in) {
         if(whitelistedItems.contains(in.toLowerCase(Locale.ROOT))) return false;
         return whitelistedItems.add(in.toLowerCase(Locale.ROOT));
@@ -34,6 +36,15 @@ public class Database implements JacksonSerializable<Database> {
     public boolean toggleActive() {
         this.active = !this.active;
         return this.active;
+    }
+
+    public boolean isSecret() {
+        return secret;
+    }
+
+    public boolean toggleSecret() {
+        this.secret = !this.secret;
+        return this.secret;
     }
 
     public boolean removeWhitelist(String in) {
