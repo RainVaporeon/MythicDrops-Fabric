@@ -3,10 +3,8 @@ package com.spiritlight.mythicdrops.commands;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.suggestion.Suggestions;
 import com.spiritlight.mythicdrops.Client;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.minecraft.server.command.TeleportCommand;
 import net.minecraft.text.Text;
 
 import java.util.List;
@@ -97,7 +95,7 @@ public class MainCommand extends AbstractCommand<FabricClientCommandSource> {
                 .then(literal("unstar")
                         .then(argument("value", StringArgumentType.greedyString())
                                 .suggests((ctx, builder) -> {
-                                    String current = getValueElse(ctx, "value", "");
+                                    String current = getValueElse(ctx);
                                     for(String value : Client.getDatabase().getWhitelistedItems().stream().filter(t -> t.toLowerCase(Locale.ROOT).startsWith(current.toLowerCase(Locale.ROOT))).toList()) {
                                         builder.suggest(value);
                                     }
@@ -136,11 +134,11 @@ public class MainCommand extends AbstractCommand<FabricClientCommandSource> {
                 }));
     }
 
-    private static String getValueElse(CommandContext<?> ctx, String key, String or) {
+    private static String getValueElse(CommandContext<?> ctx) {
         try {
-            return ctx.getArgument(key, String.class);
+            return ctx.getArgument("value", String.class);
         } catch (Exception ex) {
-            return or;
+            return "";
         }
     }
 }

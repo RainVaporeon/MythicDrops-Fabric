@@ -17,19 +17,14 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class EntityHandler extends EventBusAdapter {
 
-    private static final ScheduledExecutorService SHARED_EXECUTOR = Executors.newScheduledThreadPool(8);
-
     @Override
     public void onEntityTracking(EntityTrackingEvent event) {
         if(!Client.getDatabase().isActive()) return;
-        SHARED_EXECUTOR.schedule(() -> MainThread.run(() -> this.scanEntity(event.getEntity()))
-                , 50, TimeUnit.MILLISECONDS);
+        MainThread.runAfter(() -> this.scanEntity(event.getEntity()), 50, TimeUnit.MILLISECONDS);
     }
 
     private void scanEntity(FabricEntity entity) {
@@ -93,7 +88,6 @@ public class EntityHandler extends EventBusAdapter {
 
     /**
      *
-     * @param entity
      * @return true if the entity matches scanning preconditions
      */
     private static boolean checkPreconditions(FabricEntity entity) {

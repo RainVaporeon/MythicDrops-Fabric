@@ -11,10 +11,10 @@ import com.spiritlight.mythicdrops.handlers.EntityHandler;
 import com.spiritlight.mythicdrops.utils.ItemDetails;
 import net.fabricmc.api.ClientModInitializer;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Random;
@@ -32,6 +32,8 @@ public class Client extends EventBusAdapter implements ClientModInitializer {
 	private static boolean created = false;
 
 	static {
+		Logger INIT = LogManager.getLogger("MythicDrops/Init");
+
 		final File databaseSave = new File("config/MythicDrops119.json");
 
 		database = Internals.loadItems();
@@ -39,14 +41,14 @@ public class Client extends EventBusAdapter implements ClientModInitializer {
 		try {
 			DB.deserialize(databaseSave);
 		} catch (IOException ex) {
-			ex.printStackTrace();
+			INIT.error("Failed to load configurations: ", ex);
 		}
 
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			try {
 				DB.serialize(databaseSave);
 			} catch (IOException ex) {
-				ex.printStackTrace();
+				INIT.error("Failed to save configurations: ", ex);
 			}
 		}
 		));

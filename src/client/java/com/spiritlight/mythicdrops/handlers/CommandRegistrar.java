@@ -30,11 +30,11 @@ public class CommandRegistrar extends EventBusAdapter {
         }
     }
 
-    public void registerCommand(AbstractCommand cmd) {
+    public void registerCommand(AbstractCommand<FabricClientCommandSource> cmd) {
         this.sourceSet.add(cmd.getCommand());
     }
 
-    public void removeCommand(AbstractCommand cmd) {
+    public void removeCommand(AbstractCommand<FabricClientCommandSource> cmd) {
         this.sourceSet.remove(cmd.getCommand());
     }
 }
